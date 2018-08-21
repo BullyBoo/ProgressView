@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="HorizontalProgressViewStyle">
+        <item name="backgroundLineWidth">2dp</item>
+        <item name="progressLineWidth">2dp</item>
+        <item name="backgroundLineColor">@color/gray</item>
+        <item name="progressLineColor">@color/blue</item>
+        <item name="max">100</item>
+        <item name="min">0</item>
+        <item name="progress">70</item>
+        <item name="lineMode">circle</item>
+        <item name="animateProgress">true</item>
+        <item name="animationDuration">200</item>
+    </style>
+
+</resources>

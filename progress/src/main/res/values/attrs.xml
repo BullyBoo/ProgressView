@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="horizontalProgressViewStyle"/>
+
+    <declare-styleable name="HorizontalProgressView">
+        <attr name="backgroundLineWidth" format="dimension"/>
+        <attr name="progressLineWidth" format="dimension"/>
+        <attr name="backgroundLineColor" format="dimension"/>
+        <attr name="progressLineColor" format="dimension"/>
+        <attr name="max" format="integer"/>
+        <attr name="min" format="integer"/>
+        <attr name="progress" format="integer"/>
+        <attr name="lineMode">
+            <enum name="circle" value="1"/>
+            <enum name="square" value="2"/>
+        </attr>
+        <attr name="animateProgress" format="boolean"/>
+        <attr name="animationDuration" format="integer"/>
+
+    </declare-styleable>
+
+</resources>
