@@ -5,14 +5,14 @@ Some Progress Views for Android
 
 Gradle:
 ```groovy
-compile 'ru.bullyboo.progress:android:1.0.0'
+compile 'ru.bullyboo.progress:android:1.0.1'
 ```
 
 ```xml
 <dependency>
   <groupId>ru.bullyboo.progress</groupId>
   <artifactId>android</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
   <type>pom</type>
 </dependency>
 ```
@@ -20,8 +20,8 @@ compile 'ru.bullyboo.progress:android:1.0.0'
 ## About
 This library is a collection of Progress Views for Android. You will find here the most popular views in future.
 
-## HorizontalProgressView
-HorizontalProgressView has two line modes:
+## ProgressView
+ProgressView has two line modes:
 
 #### Circle:
 
@@ -75,6 +75,10 @@ Notice, `min` can't be less or equal to `max` value.
 `animateProgress` - flag, that enable animation of changing progress.
 
 `animationDuration` - sets the duration of animation.
+
+`mode` - sets `horizontal` or `vertical` mode of progress line
+
+`reverse` - sets the reverse mode of progress line
 
 ## License
 ```
