@@ -6,10 +6,9 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Build;
+import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.View;
-
-import androidx.annotation.RequiresApi;
 
 public class HorizontalProgressView extends View {
 
@@ -103,10 +102,13 @@ public class HorizontalProgressView extends View {
         switch (mode){
             case 1:
                 lineMode = LineMode.CIRCLE;
+                break;
             case 2:
                 lineMode = LineMode.SQUARE;
+                break;
             default:
                 lineMode = LineMode.CIRCLE;
+                break;
         }
 
         backgroundPaint = new Paint();

@@ -15,7 +15,7 @@
         app:backgroundLineWidth="10dp"
         app:progressLineWidth="10dp"
         app:progress="70"
-        app:animateProgress="true"
+        app:animateProgress="false"
         app:animationDuration="1000"
         app:lineMode="circle"/>
 
@@ -26,4 +26,5 @@
         android:layout_centerHorizontal="true"
         android:text="Random"
         android:onClick="onClick"/>
+
 </RelativeLayout>
