@@ -26,11 +26,16 @@ import android.support.annotation.RequiresApi;
 import android.util.AttributeSet;
 import android.view.View;
 
-public class HorizontalProgressView extends View {
+public class ProgressView extends View {
 
     public enum LineMode{
         CIRCLE,
         SQUARE
+    }
+
+    public enum Mode{
+        HORIZONTAL,
+        VERTICAL
     }
 
     /**
@@ -62,6 +67,10 @@ public class HorizontalProgressView extends View {
      */
     private LineMode lineMode;
 
+    private Mode mode;
+
+    private boolean reverse;
+
     private boolean animateProgress;
     private int animationDuration;
 
@@ -70,52 +79,56 @@ public class HorizontalProgressView extends View {
     private Paint backgroundPaint;
     private Paint progressPaint;
 
-    public HorizontalProgressView(Context context) {
+    public ProgressView(Context context) {
         this(context, null);
     }
 
-    public HorizontalProgressView(Context context, AttributeSet attrs) {
-        this(context, attrs, R.attr.horizontalProgressViewStyle);
+    public ProgressView(Context context, AttributeSet attrs) {
+        this(context, attrs, R.attr.progressViewStyle);
     }
 
-    public HorizontalProgressView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ProgressView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context, attrs, defStyleAttr, R.style.HorizontalProgressViewStyle);
+        init(context, attrs, defStyleAttr, R.style.ProgressViewStyle);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public HorizontalProgressView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public ProgressView(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
     private void init(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.HorizontalProgressView,
+        TypedArray array = context.obtainStyledAttributes(attrs, R.styleable.ProgressView,
                 defStyleAttr, defStyleRes);
 
         backgroundLineWidth =
-                array.getDimension(R.styleable.HorizontalProgressView_backgroundLineWidth, 0);
+                array.getDimension(R.styleable.ProgressView_backgroundLineWidth, 0);
         progressLineWidth =
-                array.getDimension(R.styleable.HorizontalProgressView_progressLineWidth, 0);
+                array.getDimension(R.styleable.ProgressView_progressLineWidth, 0);
 
         backgroundLineColor =
-                array.getColor(R.styleable.HorizontalProgressView_backgroundLineColor, 0);
+                array.getColor(R.styleable.ProgressView_backgroundLineColor, 0);
         progressLineColor =
-                array.getColor(R.styleable.HorizontalProgressView_progressLineColor, 0);
+                array.getColor(R.styleable.ProgressView_progressLineColor, 0);
 
-        max = array.getInteger(R.styleable.HorizontalProgressView_max, 0);
-        min = array.getInteger(R.styleable.HorizontalProgressView_min, 0);
-        int newProgress = array.getInteger(R.styleable.HorizontalProgressView_progress, 0);
+        max = array.getInteger(R.styleable.ProgressView_max, 0);
+        min = array.getInteger(R.styleable.ProgressView_min, 0);
+        int newProgress = array.getInteger(R.styleable.ProgressView_progress, 0);
 
-        int mode = array.getInt(R.styleable.HorizontalProgressView_lineMode, 0);
+        int lineModeFlag = array.getInt(R.styleable.ProgressView_lineMode, 0);
 
         animateProgress =
-                array.getBoolean(R.styleable.HorizontalProgressView_animateProgress, false);
+                array.getBoolean(R.styleable.ProgressView_animateProgress, false);
         animationDuration =
-                array.getInteger(R.styleable.HorizontalProgressView_animationDuration, 0);
+                array.getInteger(R.styleable.ProgressView_animationDuration, 0);
+
+        int modeFlag = array.getInt(R.styleable.ProgressView_mode, 0);
+
+        reverse = array.getBoolean(R.styleable.ProgressView_reverse, false);
 
         array.recycle();
 
-        switch (mode){
+        switch (lineModeFlag){
             case 1:
                 lineMode = LineMode.CIRCLE;
                 break;
@@ -124,6 +137,18 @@ public class HorizontalProgressView extends View {
                 break;
             default:
                 lineMode = LineMode.CIRCLE;
+                break;
+        }
+
+        switch (modeFlag){
+            case 1:
+                mode = Mode.HORIZONTAL;
+                break;
+            case 2:
+                mode = Mode.VERTICAL;
+                break;
+            default:
+                mode = Mode.HORIZONTAL;
                 break;
         }
 
@@ -156,10 +181,29 @@ public class HorizontalProgressView extends View {
         float lineWidth = backgroundLineWidth > progressLineWidth ?
                 backgroundLineWidth : progressLineWidth;
 
-        int i = MeasureSpec.makeMeasureSpec(widthMeasureSpec, MeasureSpec.AT_MOST);
+        if(mode == Mode.VERTICAL){
+            float left, right;
 
-        setMeasuredDimension(i,
-                (int) (getPaddingTop() + lineWidth + getPaddingBottom()));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                left = getPaddingStart();
+                right = getPaddingEnd();
+
+            } else {
+                left = getPaddingLeft();
+                right = getPaddingRight();
+            }
+
+            int i = MeasureSpec.makeMeasureSpec(heightMeasureSpec, MeasureSpec.AT_MOST);
+
+            setMeasuredDimension((int) (left + lineWidth + right), i);
+
+        } else {
+            int i = MeasureSpec.makeMeasureSpec(widthMeasureSpec, MeasureSpec.AT_MOST);
+
+            setMeasuredDimension(i,
+                    (int) (getPaddingTop() + lineWidth + getPaddingBottom()));
+        }
+
     }
 
     @Override
@@ -174,35 +218,70 @@ public class HorizontalProgressView extends View {
 
         float top = getPaddingTop();
 
-        float right = width -
-                (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 ?
-                        getPaddingEnd() : getPaddingRight());
+        float right = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1 ?
+                        getPaddingEnd() : getPaddingRight();
 
         float bottom = getPaddingBottom();
 
-        float centerY = (height - top - bottom) / 2 + top;
+        if(mode == Mode.VERTICAL){
+            float centerX = (width - left - right) / 2 + left;
 
-        if(lineMode == LineMode.CIRCLE){
-            float lineWidth = backgroundLineWidth > progressLineWidth ?
-                    backgroundLineWidth : progressLineWidth;
+            if(lineMode == LineMode.CIRCLE){
+                float lineWidth = backgroundLineWidth > progressLineWidth ?
+                        backgroundLineWidth : progressLineWidth;
 
-            left += lineWidth / 2;
-            right -= lineWidth / 2;
-        }
+                top += lineWidth / 2;
+                bottom -= lineWidth / 2;
+            }
 
 //        draw background line
-        canvas.drawLine(left, centerY, right, centerY, backgroundPaint);
+            canvas.drawLine(centerX, top, centerX, height - Math.abs(bottom), backgroundPaint);
 
-        float progressPercent = progress / onePercent;
+            float progressPercent = progress / onePercent;
 
-        int viewWidth = (int) (right - left);
+            int viewHeight = (int) (height - bottom - top);
 
-        float size = viewWidth * progressPercent / 100;
+            float size = viewHeight * progressPercent / 100;
 
 //        draw progress
-        canvas.drawLine(left, height / 2,
-                left + size, height / 2, progressPaint);
+            if(reverse){
+                canvas.drawLine(centerX, height - Math.abs(bottom),
+                        centerX, height - Math.abs(size), progressPaint);
+            } else {
+                canvas.drawLine(centerX, top,
+                        centerX, top + size, progressPaint);
+            }
 
+        } else {
+            float centerY = (height - top - bottom) / 2 + top;
+
+            if(lineMode == LineMode.CIRCLE){
+                float lineWidth = backgroundLineWidth > progressLineWidth ?
+                        backgroundLineWidth : progressLineWidth;
+
+                left += lineWidth / 2;
+                right -= lineWidth / 2;
+            }
+
+//        draw background line
+            canvas.drawLine(left, centerY, width - Math.abs(right), centerY, backgroundPaint);
+
+            float progressPercent = progress / onePercent;
+
+            int viewWidth = (int) (width - right - left);
+
+            float size = viewWidth * progressPercent / 100;
+
+//        draw progress
+            if(reverse){
+                canvas.drawLine(width - Math.abs(right), height / 2,
+                        width - Math.abs(size), height / 2, progressPaint);
+
+            } else {
+                canvas.drawLine(left, height / 2,
+                        left + size, height / 2, progressPaint);
+            }
+        }
     }
 
     public float getBackgroundLineWidth() {
@@ -268,7 +347,7 @@ public class HorizontalProgressView extends View {
                 animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                     @Override
                     public void onAnimationUpdate(ValueAnimator valueAnimator) {
-                        HorizontalProgressView.this.progress = (Float) valueAnimator.getAnimatedValue();
+                        ProgressView.this.progress = (Float) valueAnimator.getAnimatedValue();
                         invalidate();
                     }
                 });

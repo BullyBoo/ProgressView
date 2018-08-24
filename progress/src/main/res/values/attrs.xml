@@ -18,9 +18,9 @@
 
 <resources>
 
-    <attr name="horizontalProgressViewStyle"/>
+    <attr name="progressViewStyle"/>
 
-    <declare-styleable name="HorizontalProgressView">
+    <declare-styleable name="ProgressView">
         <attr name="backgroundLineWidth" format="dimension"/>
         <attr name="progressLineWidth" format="dimension"/>
         <attr name="backgroundLineColor" format="dimension"/>
@@ -34,6 +34,11 @@
         </attr>
         <attr name="animateProgress" format="boolean"/>
         <attr name="animationDuration" format="integer"/>
+        <attr name="mode">
+            <enum name="horizontal" value="1"/>
+            <enum name="vertical" value="2"/>
+        </attr>
+        <attr name="reverse" format="boolean"/>
 
     </declare-styleable>
 

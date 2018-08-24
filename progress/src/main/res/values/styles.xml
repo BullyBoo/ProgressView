@@ -17,7 +17,7 @@
 
 <resources>
 
-    <style name="HorizontalProgressViewStyle">
+    <style name="ProgressViewStyle">
         <item name="backgroundLineWidth">2dp</item>
         <item name="progressLineWidth">2dp</item>
         <item name="backgroundLineColor">@color/gray</item>
@@ -28,6 +28,8 @@
         <item name="lineMode">circle</item>
         <item name="animateProgress">true</item>
         <item name="animationDuration">200</item>
+        <item name="mode">horizontal</item>
+        <item name="reverse">false</item>
     </style>
 
 </resources>
